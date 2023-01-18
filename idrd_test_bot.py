@@ -8,10 +8,10 @@ from aiogram.types import ContentType, File
 from aiogram.utils import executor
 from DetectFace import detect_face
 
-with open('idrd_config.json', 'r', encoding='utf8') as config_file:
+with open('idrd_config.json', 'r', encoding='utf8') as config_file:  # загрузка конфига
     config = json.load(config_file)
 
-def ogg2wav(file):
+def ogg2wav(file):  # конвертация ogg to wav
     src_filename = file
     dest_filename = f'{file}.wav'
     process = subprocess.run(['ffmpeg', '-i', src_filename, '-ac', '1', '-f', 'wav', dest_filename], shell=True)
@@ -40,7 +40,7 @@ async def handle_convert_audio(file: File, file_name: str, path: str):
         return 0
 
 
-@dp.message_handler(content_types=[ContentType.VOICE])
+@dp.message_handler(content_types=[ContentType.VOICE])  # отлавливаем голосовые
 async def voice_message_handler(message: types.Message):
     voice = await message.voice.get_file()
     path = "/voices"
@@ -51,7 +51,7 @@ async def voice_message_handler(message: types.Message):
         await bot.send_message(message.from_user.id, 'Произошла ошибка.')
 
 
-@dp.message_handler(content_types=[ContentType.PHOTO])
+@dp.message_handler(content_types=[ContentType.PHOTO])  # отлавливаем сообщения с фото
 async def photo_message_handler(message: types.Message):
     photo = await message.photo[-1].get_file()
     photo_path = f'photos/{message.from_user.id}_{photo.file_id}.jpg'
@@ -60,7 +60,7 @@ async def photo_message_handler(message: types.Message):
     if faces_amount > 0:
         await bot.send_message(message.from_user.id, f'Лицо найдено. Фото сохранено')
     else:
-        os.remove(photo_path)
+        os.remove(photo_path)  # если лиц не найдено удаляем фото
         await bot.send_message(message.from_user.id, 'Лицо не найдено.')
 
 if __name__ == '__main__':
